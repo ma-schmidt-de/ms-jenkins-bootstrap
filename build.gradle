@@ -1,7 +1,9 @@
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
+
 plugins {
     id 'base'
-    id 'com.palantir.docker' version '0.22.1'
-    id 'com.palantir.docker-run' version '0.22.1'
+    id 'com.palantir.docker' version '0.25.0'
+    id 'com.palantir.docker-run' version '0.25.0'
     id 'pl.allegro.tech.build.axion-release' version '1.10.1'
 }
 
@@ -12,8 +14,19 @@ docker {
     files "plugins.txt", "seedJob.xml"
 }
 
-repositories {
-    mavenCentral()
+Process process
+def out = new ByteArrayOutputStream()
+String dockerSockGroupId
+if (DefaultNativePlatform.getCurrentOperatingSystem().isWindows()) {
+    process = "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock alpine stat -c %g /var/run/docker.sock".execute()
+    process.waitForProcessOutput(out, System.err)
+    dockerSockGroupId = out.toString().trim()
+} else {
+    process = "stat -c '%Sg' /var/run/docker.sock".execute()
+    process.waitForProcessOutput(out, System.err)
+    dockerSockGroupId = out.toString().trim()
+    // dirty hack to add group to docker user that can execute /var/run/docker.sock in the image
+    dockerSockGroupId = "root"
 }
 
 dockerRun {
@@ -22,4 +35,5 @@ dockerRun {
     ports '8080:8080'
     clean true
     daemonize false
+    arguments '-v', '//var/run/docker.sock:/var/run/docker.sock', '--group-add', dockerSockGroupId
 }

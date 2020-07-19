@@ -1,7 +1,7 @@
-pipelineJob('pipelineJob') {
+pipelineJob('pipelineJobTemplate') {
     definition {
         cps {
-            script(readFileFromWorkspace('jobs/pipelineJob.groovy'))
+            script(readFileFromWorkspace('jobs/pipelineJobTemplate.groovy'))
             sandbox()
         }
     }

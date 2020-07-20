@@ -1,5 +1,5 @@
 # pull latest Jenkins docker image as base
-FROM jenkins/jenkins:latest
+FROM jenkins/jenkins:lts-jdk11
 
 # install docker in custom Jenkins docker
 USER root

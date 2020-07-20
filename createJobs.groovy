@@ -37,3 +37,19 @@ pipelineJob('studio-service-job-docker') {
         }
     }
 }
+
+pipelineJob('studio-service-postman-test-local') {
+    definition {
+        cpsScm {
+            scm {
+                git {
+                    remote {
+                        url 'https://github.com/ma-schmidt-de/spring-studios-service.git'
+                    }
+                    branch 'master'
+                    scriptPath('Jenkinsfile-docker-test')
+                }
+            }
+        }
+    }
+}

@@ -1,11 +1,18 @@
 # pull latest Jenkins docker image as base
-FROM jenkins/jenkins:lts-jdk11
+FROM jenkins/jenkins:2.245-jdk11
 
 # install docker in custom Jenkins docker
 USER root
 RUN curl -sSL https://get.docker.com/ | sh
 RUN usermod -a -G docker jenkins
 USER jenkins
+
+# Install Node
+RUN curl -sL https://deb.nodesource.com/setup_4.x | bash
+RUN apt-get -y install nodejs
+RUN node -v
+RUN npm -v
+RUN npm install -g newman
 
 # install a set of Jenkins plugins
 COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
